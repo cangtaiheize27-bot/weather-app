@@ -5,8 +5,12 @@ import SearchBar from './SearchBar';
 import CurrentWeather from './CurrentWeather';
 import DateCards from './DateCards';
 import HourlyScroll from './HourlyScroll';
+import TempChart from './TempChart';
+import FavoriteBar from './FavoriteBar';
 import { groupForecastByDay, toCityDate } from '../lib/forecast';
 import { getBackgroundGradient } from '../lib/background';
+
+const FAVORITES_KEY = 'weather-app:favorites';
 
 export default function WeatherApp() {
   const [query, setQuery] = useState('');
@@ -16,6 +20,26 @@ export default function WeatherApp() {
   const [data, setData] = useState(null); // { current, forecast, label }
   const [selectedDate, setSelectedDate] = useState(null);
   const [now, setNow] = useState(() => Date.now());
+  const [favorites, setFavorites] = useState([]);
+
+  // 起動時に localStorage からお気に入りを読み込む
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(FAVORITES_KEY);
+      if (raw) setFavorites(JSON.parse(raw));
+    } catch {
+      // 壊れたデータは無視する
+    }
+  }, []);
+
+  const persistFavorites = useCallback((next) => {
+    setFavorites(next);
+    try {
+      window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
+    } catch {
+      // 保存できなくてもアプリの動作は継続する
+    }
+  }, []);
 
   // 背景グラデーション・現地時刻表示を1分ごとに更新する
   useEffect(() => {
@@ -99,10 +123,44 @@ export default function WeatherApp() {
 
   const selectedDay = dailyForecast.find((d) => d.date === selectedDate);
 
+  const currentCoord = data?.current?.coord;
+  const activeFavoriteId = currentCoord
+    ? `${currentCoord.lat.toFixed(2)},${currentCoord.lon.toFixed(2)}`
+    : null;
+  const isFavorite = favorites.some((f) => f.id === activeFavoriteId);
+
+  const handleToggleFavorite = () => {
+    if (!currentCoord) return;
+    if (isFavorite) {
+      persistFavorites(favorites.filter((f) => f.id !== activeFavoriteId));
+    } else {
+      const name = data.label || data.current.name;
+      persistFavorites([
+        ...favorites,
+        { id: activeFavoriteId, lat: currentCoord.lat, lon: currentCoord.lon, name },
+      ]);
+    }
+  };
+
+  const handleSelectFavorite = (fav) => {
+    fetchWeather({ lat: fav.lat, lon: fav.lon }, fav.name);
+  };
+
+  const handleRemoveFavorite = (fav) => {
+    persistFavorites(favorites.filter((f) => f.id !== fav.id));
+  };
+
   return (
     <main className="app" style={{ background: theme.gradient, color: theme.textColor }}>
       <div className="app__inner">
         <h1 className="app__title">天気予報</h1>
+
+        <FavoriteBar
+          favorites={favorites}
+          activeId={activeFavoriteId}
+          onSelect={handleSelectFavorite}
+          onRemove={handleRemoveFavorite}
+        />
 
         <SearchBar
           query={query}
@@ -126,8 +184,11 @@ export default function WeatherApp() {
               label={data.label}
               cityNow={cityNow}
               nextPop={data.forecast?.list?.[0]?.pop}
+              isFavorite={isFavorite}
+              onToggleFavorite={handleToggleFavorite}
             />
             <DateCards days={dailyForecast} selectedDate={selectedDate} onSelect={setSelectedDate} />
+            {selectedDay && <TempChart items={selectedDay.items} />}
             {selectedDay && <HourlyScroll items={selectedDay.items} />}
           </>
         )}

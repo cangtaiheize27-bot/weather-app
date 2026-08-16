@@ -1,6 +1,14 @@
 import { formatClock } from '../lib/format';
+import ClothingAdvice from './ClothingAdvice';
 
-export default function CurrentWeather({ current, label, cityNow, nextPop }) {
+export default function CurrentWeather({
+  current,
+  label,
+  cityNow,
+  nextPop,
+  isFavorite,
+  onToggleFavorite,
+}) {
   if (!current) return null;
 
   const weather = current.weather?.[0];
@@ -12,7 +20,20 @@ export default function CurrentWeather({ current, label, cityNow, nextPop }) {
     <section className="current">
       <div className="current__top">
         <div>
-          <p className="current__place">{label || current.name}</p>
+          <div className="current__place-row">
+            <p className="current__place">{label || current.name}</p>
+            {onToggleFavorite && (
+              <button
+                type="button"
+                className={`current__favorite${isFavorite ? ' current__favorite--active' : ''}`}
+                onClick={onToggleFavorite}
+                aria-label={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
+                title={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
+              >
+                {isFavorite ? '★' : '☆'}
+              </button>
+            )}
+          </div>
           <p className="current__time">現地時刻 {formatClock(cityNow)}</p>
         </div>
         {iconUrl && (
@@ -37,6 +58,8 @@ export default function CurrentWeather({ current, label, cityNow, nextPop }) {
           <span>{nextPop != null ? Math.round(nextPop * 100) : '-'}%</span>
         </div>
       </div>
+
+      <ClothingAdvice temp={current.main.temp} pop={nextPop} />
     </section>
   );
 }

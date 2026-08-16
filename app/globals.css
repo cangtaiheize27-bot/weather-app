@@ -52,6 +52,58 @@ body {
   margin: 0 0 16px;
 }
 
+/* --- Favorites --- */
+
+.favorites {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.favorite-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: background 0.2s ease;
+}
+
+.favorite-chip:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.favorite-chip--active {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.favorite-chip__label {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 8px 4px 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.favorite-chip__remove {
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.6;
+  padding: 6px 12px 6px 4px;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.favorite-chip__remove:hover {
+  opacity: 1;
+}
+
 /* --- Search --- */
 
 .search {
@@ -164,6 +216,61 @@ body {
   opacity: 0.8;
 }
 
+/* --- Current weather: favorite star / place row --- */
+
+.current__place-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.current__favorite {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.75;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.current__favorite:hover {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+.current__favorite--active {
+  opacity: 1;
+  color: #ffd54a;
+}
+
+/* --- Clothing advice --- */
+
+.advice {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.advice__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.advice__icon {
+  font-size: 1rem;
+}
+
 /* --- Section title --- */
 
 .section-title {
@@ -237,6 +344,53 @@ body {
 .date-card__min {
   opacity: 0.65;
   font-weight: 400;
+}
+
+/* --- Temperature chart --- */
+
+.temp-chart {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 18px;
+  padding: 16px 12px 8px;
+  margin-bottom: 16px;
+}
+
+.temp-chart__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.temp-chart__area {
+  fill: currentColor;
+  opacity: 0.12;
+  stroke: none;
+}
+
+.temp-chart__line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.temp-chart__dot {
+  fill: currentColor;
+}
+
+.temp-chart__label {
+  fill: currentColor;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.temp-chart__hour {
+  fill: currentColor;
+  font-size: 10px;
+  opacity: 0.75;
 }
 
 /* --- Hourly scroll --- */
